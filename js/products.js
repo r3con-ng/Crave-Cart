@@ -1,101 +1,140 @@
-/* ========== Products Slider =========== */
-const swiper = new Swiper(".mySwiper", {
-  grabCursor: true,
-  slidesPerView: 1,
-  spaceBetween: 30,
-  pagination: {
-    el: ".custom-pagination",
-    clickable: true,
-  },
-  breakpoints: {
-    567: {
-      slidesPerView: 2,
-    },
-    996: {
-      slidesPerView: 3,
-    },
-    1200: {
-      slidesPerView: 4,
-    },
-  },
+/* Product menu, search and category filtering. */
+const currency = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
 });
 
-/* ========== Fetch the Products =========== */
+let allProducts = [];
+let activeCategory = "All Product";
+let activeQuery = "";
+let productSwiper;
 
-const getProducts = async () => {
-  try {
-    const results = await fetch("./data/products.json");
-    const data = await results.json();
-    const products = data.products;
-    return products;
-  } catch (err) {
-    console.log(err);
-  }
-};
+const productsWrapper = document.getElementById("products-wrapper");
+const filterButtons = [...document.querySelectorAll(".filters [data-filter]")];
+filterButtons[0]?.classList.add("active");
+const searchInputs = [
+  document.getElementById("product-search"),
+  document.getElementById("product-search-mobile"),
+].filter(Boolean);
 
-const ProductsWrapper = document.getElementById("products-wrapper");
-
-window.addEventListener("DOMContentLoaded", async function () {
-  const products = await getProducts();
-  displayProductItems(products);
-});
-
-/* ========== Display Products =========== */
-const displayProductItems = (items) => {
-  let displayProduct = items.map(
-    (product) => ` 
-                <div class="swiper-slide">
-                <div class="card d-flex">
-                  <div class="image"><img src=${product.url} alt=""></div>
-                  <div class="rating">
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  </div>
-                  <h4>${product.title}</h4>
-                  <div class="price">
-                    <span>Price</span><span class="color">$${product.price}</span>
-                  </div>
-                  <div class="button btn">Add To Cart+</div>
-                </div>
-              </div>
-                  `
+const escapeHtml = (value) =>
+  String(value).replace(/[&<>"']/g, (character) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+      character
+    ]
   );
 
-  displayProduct = displayProduct.join("");
-  if (ProductsWrapper) {
-    ProductsWrapper.innerHTML = displayProduct;
+const renderProducts = () => {
+  const visibleProducts = allProducts.filter((product) => {
+    const matchesCategory =
+      activeCategory === "All Product" || product.category === activeCategory;
+    const query = activeQuery.trim().toLocaleLowerCase();
+    const matchesQuery =
+      !query ||
+      `${product.title} ${product.category}`.toLocaleLowerCase().includes(query);
+    return matchesCategory && matchesQuery;
+  });
+
+  if (!productsWrapper) return;
+  productsWrapper.innerHTML = visibleProducts.length
+    ? visibleProducts
+        .map(
+          (product) => `
+            <article class="swiper-slide product-slide">
+              <div class="card d-flex">
+                <div class="image"><img src="${escapeHtml(product.url)}" alt="${escapeHtml(product.title)}" loading="lazy" /></div>
+                <div class="rating" aria-label="Rated ${escapeHtml(product.rating || 4.8)} out of 5">
+                  <span aria-hidden="true"><i class="bx bxs-star"></i></span>
+                  <span aria-hidden="true"><i class="bx bxs-star"></i></span>
+                  <span aria-hidden="true"><i class="bx bxs-star"></i></span>
+                  <span aria-hidden="true"><i class="bx bxs-star"></i></span>
+                  <span aria-hidden="true"><i class="bx bxs-star-half"></i></span>
+                  <small>${escapeHtml(product.rating || "4.8")}</small>
+                </div>
+                <h4>${escapeHtml(product.title)}</h4>
+                <div class="price"><span>Price</span><span class="color">${currency.format(Number(product.price))}</span></div>
+                <button class="button btn add-to-cart" type="button" data-product-id="${escapeHtml(product.id)}">Add to cart <i class="bx bx-plus" aria-hidden="true"></i></button>
+              </div>
+            </article>
+          `
+        )
+        .join("")
+    : '<div class="menu-empty"><i class="bx bx-search-alt" aria-hidden="true"></i><strong>No dishes found</strong><span>Try a different search or category.</span></div>';
+
+  if (productSwiper) {
+    productSwiper.update();
+    productSwiper.slideTo(0, 0);
   }
 };
 
-/* ========== Filter Products =========== */
-const filters = [...document.querySelectorAll(".filters span")];
-
-filters.forEach((filter) => {
-  filters[0].classList.add("active");
-  filter.addEventListener("click", async (e) => {
-    const id = e.target.getAttribute("data-filter");
-    const target = e.target;
-    const products = await getProducts();
-    filters.forEach((btn) => {
-      btn.classList.remove("active");
-    });
-    target.classList.add("active");
-
-    let menuCategory = products.filter((product) => {
-      if (product.category === id) {
-        return product;
-      }
-    });
-
-    if (id === "All Product") {
-      displayProductItems(products);
-      swiper.update();
-    } else {
-      displayProductItems(menuCategory);
-      swiper.update();
+const loadProducts = async () => {
+  try {
+    const response = await fetch("./data/products.json");
+    if (!response.ok) throw new Error(`Menu request failed (${response.status})`);
+    const data = await response.json();
+    allProducts = Array.isArray(data.products) ? data.products : [];
+    window.CraveCart?.setProducts(allProducts);
+    renderProducts();
+  } catch (error) {
+    if (productsWrapper) {
+      productsWrapper.innerHTML =
+        '<div class="menu-empty"><strong>Menu unavailable</strong><span>Please refresh to try again.</span></div>';
     }
+    console.error("Could not load the menu:", error);
+  }
+};
+
+if (window.Swiper) {
+  productSwiper = new Swiper(".mySwiper", {
+    grabCursor: true,
+    slidesPerView: 1,
+    spaceBetween: 30,
+    pagination: { el: ".custom-pagination", clickable: true },
+    breakpoints: {
+      567: { slidesPerView: 2 },
+      996: { slidesPerView: 3 },
+      1200: { slidesPerView: 4 },
+    },
+  });
+}
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.filter;
+    filterButtons.forEach((item) => {
+      const isActive = item === button;
+      item.classList.toggle("active", isActive);
+      item.setAttribute("aria-pressed", String(isActive));
+    });
+    renderProducts();
   });
 });
+
+searchInputs.forEach((input) => {
+  input.addEventListener("input", () => {
+    activeQuery = input.value;
+    searchInputs.forEach((other) => {
+      if (other !== input) other.value = input.value;
+    });
+    renderProducts();
+  });
+});
+
+document.querySelectorAll(".search-form").forEach((form) => {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    document.getElementById("recipes")?.scrollIntoView({ behavior: "smooth" });
+  });
+});
+
+productsWrapper?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-product-id]");
+  if (!button) return;
+  const product = allProducts.find(
+    (item) => String(item.id) === button.dataset.productId
+  );
+  if (product) window.CraveCart?.add(product);
+});
+
+loadProducts();

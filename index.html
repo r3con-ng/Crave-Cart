@@ -22,52 +22,58 @@
     />
     <!--=============== Custom StyleSheet ===============-->
     <link rel="stylesheet" href="./css/styles.css" />
-    <title>FDelivery</title>
+    <meta name="theme-color" content="#f94a3d" />
+    <meta name="description" content="Fresh favorites, delivered with care. Order from CraveCart." />
+    <title>CraveCart — good food, right on time</title>
   </head>
   <body>
     <!--=============== Header ===============-->
     <header class="header">
       <nav class="navbar">
         <div class="row d-flex container">
-          <a href="" class="logo d-flex">
-            <img src="./images/logo.png" alt="" />
+          <a href="#home" class="logo d-flex brand-logo" aria-label="CraveCart home">
+            <span class="brand-mark" aria-hidden="true">C</span><span>Crave<span>Cart</span></span>
           </a>
 
           <ul class="nav-list d-flex">
-            <a href="">Home</a>
-            <a href="">About</a>
-            <a href="">Shop</a>
-            <a href="">Food</a>
-            <a href="">Recipes</a>
-            <a href="">Contact</a>
-            <span class="close d-flex"><i class="bx bx-x"></i></span>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#recipes">Shop</a>
+            <a href="#recipes">Food</a>
+            <a href="#testimonials">Reviews</a>
+            <a href="#footer">Contact</a>
+            <button class="close d-flex" type="button" aria-label="Close navigation"><i class="bx bx-x"></i></button>
           </ul>
 
           <div class="col d-flex">
-            <form>
-              <input type="search" placeholder="Search your item" />
-              <button class="d-flex"><i class="bx bx-search"></i></button>
+            <form class="search-form" role="search" action="#recipes">
+              <label class="visually-hidden" for="product-search">Search menu</label>
+              <input id="product-search" type="search" placeholder="Search your item" autocomplete="off" />
+              <button class="d-flex" type="submit" aria-label="Search menu"><i class="bx bx-search"></i></button>
             </form>
-            <div class="cart-icon d-flex">
+            <button class="cart-icon d-flex" type="button" aria-label="Open shopping cart" aria-controls="cart-panel" aria-expanded="false">
               <i class="bx bx-shopping-bag"></i>
-              <span>0</span>
-            </div>
-            <a class="btn signin">Sign In</a>
+              <span aria-live="polite">0</span>
+            </button>
+            <button class="btn signin" type="button">Sign In</button>
           </div>
 
           <!-- Hamburger -->
-          <div class="hamburger d-flex">
+          <button class="hamburger d-flex" type="button" aria-label="Open navigation" aria-expanded="false">
             <i class="bx bx-menu"></i>
-          </div>
+          </button>
+          <button class="cart-icon mobile-cart d-flex" type="button" aria-label="Open shopping cart" aria-controls="cart-panel" aria-expanded="false">
+            <i class="bx bx-shopping-bag"></i><span aria-live="polite">0</span>
+          </button>
         </div>
       </nav>
 
       <!--=============== Home ===============-->
-      <div class="home">
+      <div class="home" id="home">
         <div class="row container">
           <div class="col">
             <div class="faster">
-              More than Faster
+              Fresh, fast & local
               <div class="image d-flex">
                 <img src="./images/french-fries.svg" alt="" />
               </div>
@@ -78,10 +84,10 @@
               <span class="color">your door</span>
             </h1>
             <p>
-              Food that is delivered at the right time. The trendy food delivery
-              partner. Good food is what we deliver. Your hunger companion.
+              Crave the good stuff. Discover neighborhood favorites and get
+              fresh, delicious food brought right to your door.
             </p>
-            <a href="" class="btn">Explore Food</a>
+            <a href="#recipes" class="btn">Explore the menu</a>
           </div>
           <div class="col">
             <img src="./images/delivery-guy.svg" alt="" />
@@ -91,42 +97,86 @@
 
       <!--=============== SignIn Form ===============-->
       <div class="wrapper">
-        <form action="" class="form">
-          <h2>SIGN IN</h2>
+        <form action="#" class="form" id="signin-form">
+          <h2>WELCOME BACK</h2>
+          <p class="form-note">Demo sign in — no account is created.</p>
 
           <div class="control">
-            <label for="">Enter Email:</label>
-            <input type="email" placeholder="Enter Your Email" />
+            <label for="signin-email">Email address</label>
+            <input id="signin-email" type="email" placeholder="you@example.com" autocomplete="email" required />
           </div>
           <div class="control">
-            <label for="">Password:</label>
-            <input type="password" placeholder="Password" />
+            <label for="signin-password">Password</label>
+            <input id="signin-password" type="password" placeholder="At least 6 characters" autocomplete="current-password" minlength="6" required />
           </div>
           <div class="checkbox d-flex">
-            <input type="checkbox" />
-            <span>Remember Me</span>
+            <input id="remember-me" type="checkbox" />
+            <label for="remember-me">Remember me on this device</label>
           </div>
-          <button class="btn">Sign In</button>
+          <button class="btn" type="submit">Sign In</button>
           <div class="links">
-            <span>Forgot Password? <a href="">Click Here</a></span>
-            <span>Don't Have An Account? <a href="">Create One</a></span>
+            <span>Demo only. Your details stay in this browser.</span>
           </div>
         </form>
 
-        <div class="close-form">
+        <button class="close-form" type="button" aria-label="Close sign in">
           <i class="bx bx-x"></i>
-        </div>
+        </button>
       </div>
     </header>
+
+    <div class="panel-backdrop" id="cart-backdrop" hidden></div>
+    <aside class="cart-panel" id="cart-panel" aria-labelledby="cart-title" aria-hidden="true" inert>
+      <div class="panel-heading">
+        <div><span class="eyebrow">YOUR ORDER</span><h2 id="cart-title">Shopping cart</h2></div>
+        <button class="icon-button" type="button" data-close-cart aria-label="Close cart"><i class="bx bx-x"></i></button>
+      </div>
+      <div class="cart-items" id="cart-items" aria-live="polite"></div>
+      <div class="cart-empty" id="cart-empty">
+        <i class="bx bx-basket" aria-hidden="true"></i><h3>Your cart is waiting</h3>
+        <p>Add a few favorites from the menu and they’ll show up here.</p>
+        <button class="btn" type="button" data-close-cart>Explore the menu</button>
+      </div>
+      <div class="cart-summary" id="cart-summary" hidden>
+        <div class="summary-row"><span>Subtotal</span><strong id="cart-subtotal">₹0</strong></div>
+        <p>Delivery and taxes are calculated at checkout.</p>
+        <button class="btn checkout-start" id="checkout-start" type="button">Continue to checkout <i class="bx bx-right-arrow-alt"></i></button>
+      </div>
+    </aside>
+
+    <div class="modal-backdrop" id="checkout-backdrop" hidden>
+      <section class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+        <button class="icon-button checkout-close" type="button" data-close-checkout aria-label="Close checkout"><i class="bx bx-x"></i></button>
+        <span class="eyebrow">DEMO CHECKOUT</span>
+        <h2 id="checkout-title">Where should we bring it?</h2>
+        <p class="form-note">This is a preview. No payment or order will be placed.</p>
+        <form id="checkout-form">
+          <label for="checkout-name">Your name</label>
+          <input id="checkout-name" name="name" autocomplete="name" required />
+          <label for="checkout-phone">Phone number</label>
+          <input id="checkout-phone" name="phone" type="tel" autocomplete="tel" pattern="[0-9+() -]{8,16}" required />
+          <label for="checkout-address">Delivery address</label>
+          <textarea id="checkout-address" name="address" rows="3" autocomplete="street-address" required></textarea>
+          <button class="btn" type="submit">Preview my order</button>
+        </form>
+        <div class="order-confirmation" id="order-confirmation" role="status" hidden>
+          <i class="bx bx-check-circle" aria-hidden="true"></i>
+          <h3>Looks delicious!</h3>
+          <p>Your demo order is ready to review. Nothing was charged or sent.</p>
+          <button class="btn" type="button" data-close-checkout>Back to CraveCart</button>
+        </div>
+      </section>
+    </div>
+    <div class="toast" id="site-toast" role="status" aria-live="polite"></div>
 
     <!--=============== Services ===============-->
     <section class="section services" id="services">
       <div class="row container">
         <div class="col">
-          <h2>Why we are Best in our Twon</h2>
+          <h2>Good food, made easy</h2>
           <p>
-            whole grains and low-fat dairy can help to reduce your risk of heart
-            disease by maintaining blood pressure and
+            Find something you love, make it yours, and get your order ready in
+            just a few simple steps.
           </p>
         </div>
         <div class="col">
@@ -153,9 +203,9 @@
           <div class="card">
             <img src="./images/phone-icon.svg" alt="" />
             <h3>
-              We have <br />
-              400+ Review <br />
-              On our app
+              Loved by <br />
+              food fans <br />
+              everywhere
             </h3>
           </div>
         </div>
@@ -170,30 +220,27 @@
         </div>
         <div class="col">
           <h2>Take a look at the benefits we offer for you</h2>
-          <p>
-            Good service means a friendly, welcoming service. A restaurant owner
-            should not merely strive to avoid bad service,
-          </p>
+          <p>Thoughtful details make every meal better. Explore the menu, keep track of your cart, and preview checkout before you decide.</p>
           <div class="d-grid">
             <div class="card">
               <img src="./images/car-icon.svg" alt="" />
-              <h4>Free Home Delivary</h4>
-              <span>For all orders over $50</span>
+              <h4>Easy ordering</h4>
+              <span>Find your next favorite</span>
             </div>
             <div class="card">
               <img src="./images/dollar-icon.svg" alt="" />
-              <h4>Return & Refund</h4>
-              <span>Money Back Guarantee</span>
+              <h4>Clear totals</h4>
+              <span>See your cart subtotal</span>
             </div>
             <div class="card">
               <img src="./images/security-icon.svg" alt="" />
-              <h4>Secure Payment</h4>
-              <span>100% Secure Payment</span>
+              <h4>Safe preview</h4>
+              <span>No payment details needed</span>
             </div>
             <div class="card">
               <img src="./images/time-icon.svg" alt="" />
-              <h4>Quality Support</h4>
-              <span>Alway Online 24/7</span>
+              <h4>Ready anytime</h4>
+              <span>Your cart stays on this device</span>
             </div>
           </div>
         </div>
@@ -202,36 +249,24 @@
 
     <!--=============== Recipes ===============-->
     <section class="section recipes" id="recipes">
-      <h2>Try Our Special Recipes</h2>
+      <h2>Find your new favorite</h2>
+      <p class="menu-demo-note">Sample menu and prices shown in INR.</p>
       <div class="row container">
-        <div class="filters d-flex">
-          <span data-filter="All Product">See All Product</span>
-          <span data-filter="Fast Food">Fast Food</span>
-          <span data-filter="Rice Menu">Rice Menu</span>
-          <span data-filter="Desserts">Desserts</span>
-          <span data-filter="Coffee">Coffee</span>
-          <span data-filter="Pizza">Pizza</span>
+        <label class="mobile-search" for="product-search-mobile">
+          <i class="bx bx-search" aria-hidden="true"></i>
+          <input id="product-search-mobile" type="search" placeholder="Search the menu" autocomplete="off" />
+        </label>
+        <div class="filters d-flex" role="group" aria-label="Filter menu by category">
+          <button type="button" data-filter="All Product" aria-pressed="true">See All Product</button>
+          <button type="button" data-filter="Fast Food" aria-pressed="false">Fast Food</button>
+          <button type="button" data-filter="Rice Menu" aria-pressed="false">Rice Menu</button>
+          <button type="button" data-filter="Desserts" aria-pressed="false">Desserts</button>
+          <button type="button" data-filter="Coffee" aria-pressed="false">Coffee</button>
+          <button type="button" data-filter="Pizza" aria-pressed="false">Pizza</button>
         </div>
         <div class="products">
           <div class="swiper mySwiper">
             <div class="swiper-wrapper" id="products-wrapper">
-              <!-- <div class="swiper-slide">
-                <div class="card">
-                  <div class="image"><img src="./images/meat-2.svg" alt=""></div>
-                  <div class="rating">
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  <span><i class="bx bxs-star"></i></span>
-                  </div>
-                  <h4>Crispy Fried Chicken</h4>
-                  <div class="price">
-                    <span>Price</span><span class="color">$13.00</span>
-                  </div>
-                  <div class="button">Add To Cart+</div>
-                </div>
-              </div> -->
             </div>
           </div>
           <div class="pagination">
@@ -351,13 +386,10 @@
     <footer class="footer">
       <div class="row container">
         <div class="col">
-          <div class="logo d-flex">
-            <img src="./images/logo.png" alt="logo" />
+          <div class="logo d-flex brand-logo" aria-label="CraveCart">
+            <span class="brand-mark" aria-hidden="true">C</span><span>Crave<span>Cart</span></span>
           </div>
-          <p>
-            Retail food delivery is a courier service in which a restaurant,
-            store, or independent food-delivery
-          </p>
+          <p>Neighborhood favorites, comforting classics, and little treats for the way home. Find a good thing to eat with CraveCart.</p>
           <div class="icons d-flex">
             <div class="icon d-flex">
               <i class="bx bxl-facebook"></i>
@@ -369,38 +401,38 @@
         <div class="col">
           <div>
             <h4>Company</h4>
-            <a href="">About Us</a>
-            <a href="">Blog</a>
-            <a href="">All Products</a>
-            <a href="">Locations Map</a>
+            <a href="#about">About Us</a>
+            <a href="#testimonials">Customer stories</a>
+            <a href="#recipes">All Products</a>
+            <a href="#home">Back to top</a>
           </div>
           <div>
             <h4>Services</h4>
-            <a href="">Order tracking</a>
-            <a href="">Wish List</a>
-            <a href="">My account</a>
-            <a href="">Terms & Conditions</a>
+            <a href="#recipes">Browse the menu</a>
+            <a href="#recipes">Today's picks</a>
+            <a href="#home" class="signin">Sign in demo</a>
+            <a href="#footer">Demo information</a>
           </div>
           <div>
             <h4>Support</h4>
-            <a href="">FAQ</a>
-            <a href="">Policy </a>
-            <a href="">Business</a>
-            <a href="">Support Carrer</a>
+            <a href="#recipes">How ordering works</a>
+            <a href="#footer">Privacy</a>
+            <a href="#footer">Partner with us</a>
+            <a href="#footer">Careers</a>
           </div>
           <div>
             <h4>Contact</h4>
-            <a href="">WhatsApp</a>
-            <a href="">Support 24 </a>
-            <a href="">Quick Chat</a>
+            <a href="mailto:hello@cravecart.example">Email us</a>
+            <a href="#footer">Help center</a>
+            <a href="#footer">Quick chat</a>
           </div>
         </div>
       </div>
     </footer>
-    <div class="footer-bottom">
+    <div class="footer-bottom" id="footer">
       <div class="row container d-flex">
-        <p>Copyright © 2021 </p>
-        <p>Created by Dark</p>
+        <p>© <span id="copyright-year">2026</span> CraveCart</p>
+        <p>Fresh picks, happy plates.</p>
       </div>
     </div>
 
